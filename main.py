@@ -1,28 +1,51 @@
 import openai
 import streamlit as st
+import streamlit_authenticator as stauth
 
 
 def main():
     st.title("Générateur d'annonces")
 
-    with st.form("my_form"):
-        qualification = st.text_input("Qualification")
-        contrat_type = st.selectbox('Type de contrat', ('Intérim', 'CDD', 'CDI'))
-        secteur = st.text_input("Secteur d'activité")
-        profil_recherche = st.text_input("Profil recherché")
-        caracteristique = st.text_input("Caractéristiques du poste")
+    beta = st.secrets.beta
+    cookie_name = st.secrets.cookie.name
+    cookie_key = st.secrets.cookie.key
+    cookie_expiry_days = st.secrets.cookie.expiry_days
+    preauthorized = st.secrets.preauthorized
 
-        submitted = st.form_submit_button("Générer")
+    # hashed_password = stauth.Hasher([""]).generate()
+    # print(hashed_password)
 
-        if submitted:
-            content = format_content(qualification, contrat_type, secteur, profil_recherche, caracteristique)
-            completion = call_chat(content)
+    credentials = dict(usernames=dict(beta=dict(email=beta.email, name=beta.name, password=beta.password)))
+    authenticator = stauth.Authenticate(credentials, cookie_name, cookie_key, cookie_expiry_days, preauthorized)
 
-            st.caption(completion.choices[0].message.content)
+    name, authentication_status, username = authenticator.login("Connection", "main")
+
+    if authentication_status is None:
+        st.warning("Veuillez saisir votre nom d'utilisateur et mot de passe")
+    elif authentication_status is False:
+        st.error("Nom d'utilisateur et/ou mot de passe incorrect")
+    elif authentication_status:
+        with st.form("job_ads_generator_form"):
+            qualification = st.text_input("Qualification")
+            contrat_type = st.selectbox("Type de contrat", ("Intérim", "CDD", "CDI"))
+            secteur = st.text_input("Secteur d'activité")
+            profil_recherche = st.text_input("Profil recherché")
+            caracteristique = st.text_input("Caractéristiques du poste")
+
+            submitted = st.form_submit_button("Générer")
+
+            if submitted:
+                content = format_content(qualification, contrat_type, secteur, profil_recherche, caracteristique)
+                completion = call_chat(content)
+
+                st.caption(completion.choices[0].message.content)
+
+        authenticator.logout("Se déconnecter", "main")
 
 
-def format_content(qualification: str, contrat_type: str,
-                   secteur: str, profil_recherche: str, caracteristique: str) -> str:
+def format_content(
+    qualification: str, contrat_type: str, secteur: str, profil_recherche: str, caracteristique: str
+) -> str:
     content = "Rédige moi une annonce d'emploi attractive pour un poste de "
 
     qualification = qualification.strip()
@@ -43,9 +66,14 @@ def format_content(qualification: str, contrat_type: str,
     if profil_recherche != "":
         content = content + "Le profil recherché doit posséder les compétences suivantes : " + profil_recherche + "."
 
-    content = content + "En faisant apparaître les missions principales sous forme de bullet point puis une section dediee pour le profil recherche."
+    content = (
+        content
+        + "En faisant apparaître les missions principales sous forme de bullet point puis une section dediee pour le profil recherche."
+    )
 
-    content = content + """En mentionnant des bénéfices offerts par l'agence d'interim parmi les suivants :
+    content = (
+        content
+        + """En mentionnant des bénéfices offerts par l'agence d'interim parmi les suivants :
         - Acomptes 2 fois par semaine les mardis et jeudis
         - 10% d’indemnité de fin de mission
         - 10% d’indemnité congés payés
@@ -54,6 +82,7 @@ def format_content(qualification: str, contrat_type: str,
         - Une prime de fidélité pouvant aller jusqu’à 200€ en janvier 2024
         - Accédez à notre partenaire Couleur CE dès la 1ère heure de mission (billetterie, parcs et loisirs, art et culture…).
         - Bénéficiez d’une mutuelle d’entreprise et d’un accès au FASTT : accédez à des formations, des réductions sur vos locations de voiture, un accès prioritaire aux gardes d’enfant…"""
+    )
 
     return content
 
@@ -65,8 +94,8 @@ def call_chat(content):
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "Tu es un consultant d'une agence Aquila RH"},
-            {"role": "user", "content": content}
-        ]
+            {"role": "user", "content": content},
+        ],
     )
 
     return completion
