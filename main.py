@@ -6,6 +6,14 @@ import streamlit_authenticator as stauth
 def main():
     st.title("Générateur d'annonces")
 
+    hide_streamlit_style = """
+                <style>
+                header {visibility: hidden;}
+                footer {visibility: hidden;}
+                </style>
+                """
+    st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
     # Format login form
     authentication_status = format_login_form()
 
@@ -115,23 +123,29 @@ def format_chat_message(
 
     question = question + "Ecris dans un style professionnel mais néanmoins énergique. "
 
-    question = (
-        question
-        + """En mentionnant des bénéfices offerts par l'agence d'interim parmi les suivants :
-        - Acomptes 2 fois par semaine les mardis et jeudis
-        - 10% d’indemnité de fin de mission
-        - 10% d’indemnité congés payés
-        - Accédez à notre partenaire Couleur CE dès la 1ère heure de mission (billetterie, parcs et loisirs, art et culture…).
-        - Bénéficiez d’une mutuelle d’entreprise et d’un accès au FASTT : accédez à des formations, des réductions sur vos locations de voiture, un accès prioritaire aux gardes d’enfant…"""
-    )
+    if contrat_type == "Intérim":
+        question = (
+            question
+            + """En mentionnant des bénéfices offerts par l'agence d'interim parmi les suivants :
+            - Acomptes 2 fois par semaine les mardis et jeudis
+            - 10% d’indemnité de fin de mission
+            - 10% d’indemnité congés payés"""
+        )
 
-    if brand == "Aquila RH" or brand == "Mistertemp'":
+        if brand == "Aquila RH" or brand == "Mistertemp'":
+            question = (
+                question
+                + """
+            - Avances de trésorerie jusqu’à 100% de vos Indemnités de Fin de Mission et Indémnités Congés Payés
+            - Votre épargne rémunérée à 5% par an en 2023
+            - Une prime de fidélité pouvant aller jusqu’à 200€ en janvier 2024"""
+            )
+
         question = (
             question
             + """
-        - Avances de trésorerie jusqu’à 100% de vos Indemnités de Fin de Mission et Indémnités Congés Payés
-        - Votre épargne rémunérée à 5% par an en 2023
-        - Une prime de fidélité pouvant aller jusqu’à 200€ en janvier 2024"""
+            - Accédez à notre partenaire Couleur CE dès la 1ère heure de mission (billetterie, parcs et loisirs, art et culture…).
+            - Bénéficiez d’une mutuelle d’entreprise et d’un accès au FASTT : accédez à des formations, des réductions sur vos locations de voiture, un accès prioritaire aux gardes d’enfant…"""
         )
 
     return agent, question
