@@ -24,14 +24,9 @@ def format_login_form():
     cookie_expiry_days = st.secrets.cookie.expiry_days
     preauthorized = st.secrets.preauthorized
 
-    # hashed_password = stauth.Hasher(["mtadsgen!"]).generate()
-    # print(hashed_password)
-
     credentials = dict(usernames=dict(mistertemp=dict(email=beta.email, name=beta.name, password=beta.password)))
     authenticator = stauth.Authenticate(credentials, cookie_name, cookie_key, cookie_expiry_days, preauthorized)
-
     name, authentication_status, username = authenticator.login("Connection", "main")
-    authenticator.logout("Logout", "main")
 
     return authentication_status
 
