@@ -67,14 +67,25 @@ def format_ads_generator_form(country: str):
                 ("Aquila RH", "Lynx RH", "Vitalis Médical", "Mistertemp'"),
                 key="brand_" + country_code,
             )
+
+            contract_type = st.selectbox(
+                t(country_code, "contract_type") + " *",
+                (
+                    t(country_code, "interim"),
+                    t(country_code, "cdi"),
+                    t(country_code, "cdd"),
+                    t(country_code, "vacation"),
+                ),
+                key="contract_type_" + country_code,
+            )
         else:
             brand = "Mistertemp' Italia"
 
-        contract_type = st.selectbox(
-            t(country_code, "contract_type") + " *",
-            (t(country_code, "interim"), t(country_code, "cdi"), t(country_code, "cdd"), t(country_code, "vacation")),
-            key="contract_type_" + country_code,
-        )
+            contract_type = st.selectbox(
+                t(country_code, "contract_type") + " *",
+                (t(country_code, "interim"), t(country_code, "cdi"), t(country_code, "cdd")),
+                key="contract_type_" + country_code,
+            )
 
         qualification = st.text_input(
             t(country_code, "qualification") + " *",
@@ -85,22 +96,29 @@ def format_ads_generator_form(country: str):
         industry = st.text_input(
             t(country_code, "industry") + " *",
             key="industry_" + country_code,
-            placeholder=t(country_code, "industry"),
-            help=t(country_code, "industry"),
+            placeholder=t(country_code, "industry_placeholder"),
+            help=t(country_code, "industry_help"),
+        )
+
+        tasks = st.text_input(
+            t(country_code, "tasks"),
+            key="tasks_" + country_code,
+            placeholder=t(country_code, "tasks_placeholder"),
+            help=t(country_code, "tasks_help"),
         )
 
         prerequirement = st.text_input(
             t(country_code, "prerequirement"),
             key="prerequirement_" + country_code,
-            placeholder=t(country_code, "prerequirement"),
-            help=t(country_code, "prerequirement"),
+            placeholder=t(country_code, "prerequirement_placeholder"),
+            help=t(country_code, "prerequirement_help"),
         )
 
         competencies = st.text_input(
             t(country_code, "competencies"),
             key="competencies_" + country_code,
-            placeholder=t(country_code, "competencies"),
-            help=t(country_code, "competencies"),
+            placeholder=t(country_code, "competencies_placeholder"),
+            help=t(country_code, "competencies_help"),
         )
 
         submit_button = st.form_submit_button(t(country_code, "form_submit_button"))
@@ -123,6 +141,7 @@ def format_ads_generator_form(country: str):
                     industry,
                     competencies,
                     prerequirement,
+                    tasks,
                 )
 
                 res_box = st.empty()
@@ -143,6 +162,7 @@ def format_chat_message(
     industry: str,
     competencies: str,
     prerequirement: str,
+    tasks: str,
 ) -> str:
     country_code = "fr" if country == "France" else "it"
     brand = brand.strip()
@@ -151,6 +171,7 @@ def format_chat_message(
     industry = industry.strip()
     competencies = competencies.strip()
     prerequirement = prerequirement.strip()
+    tasks = tasks.strip()
 
     agent = t(country_code, "prompt_agent") + brand
     question_list = [
@@ -159,6 +180,9 @@ def format_chat_message(
             qualification=qualification, contract_type=contract_type, industry=industry
         ),
     ]
+
+    if tasks != "":
+        question_list.append(t(country_code, "prompt_question_tasks").format(tasks=tasks))
 
     if prerequirement != "":
         question_list.append(t(country_code, "prompt_question_prerequirement").format(prerequirement=prerequirement))
