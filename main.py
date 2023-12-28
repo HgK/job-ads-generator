@@ -40,8 +40,14 @@ def format_login_form():
     cookie_expiry_days = st.secrets.cookie.expiry_days
     preauthorized = st.secrets.preauthorized
 
-    credentials = dict(usernames=dict(mistertemp=dict(email=beta.email, name=beta.name, password=beta.password)))
-    authenticator = stauth.Authenticate(credentials, cookie_name, cookie_key, cookie_expiry_days, preauthorized)
+    credentials = dict(
+        usernames=dict(
+            mistertemp=dict(email=beta.email, name=beta.name, password=beta.password)
+        )
+    )
+    authenticator = stauth.Authenticate(
+        credentials, cookie_name, cookie_key, cookie_expiry_days, preauthorized
+    )
     name, authentication_status, username = authenticator.login("Connection", "main")
 
     return authentication_status
@@ -83,7 +89,11 @@ def format_ads_generator_form(country: str):
 
             contract_type = st.selectbox(
                 t(country_code, "contract_type") + " *",
-                (t(country_code, "interim"), t(country_code, "cdi"), t(country_code, "cdd")),
+                (
+                    t(country_code, "interim"),
+                    t(country_code, "cdi"),
+                    t(country_code, "cdd"),
+                ),
                 key="contract_type_" + country_code,
             )
 
@@ -182,13 +192,23 @@ def format_chat_message(
     ]
 
     if tasks != "":
-        question_list.append(t(country_code, "prompt_question_tasks").format(tasks=tasks))
+        question_list.append(
+            t(country_code, "prompt_question_tasks").format(tasks=tasks)
+        )
 
     if prerequirement != "":
-        question_list.append(t(country_code, "prompt_question_prerequirement").format(prerequirement=prerequirement))
+        question_list.append(
+            t(country_code, "prompt_question_prerequirement").format(
+                prerequirement=prerequirement
+            )
+        )
 
     if competencies != "":
-        question_list.append(t(country_code, "prompt_question_competencies").format(competencies=competencies))
+        question_list.append(
+            t(country_code, "prompt_question_competencies").format(
+                competencies=competencies
+            )
+        )
 
     question_list.append(t(country_code, "prompt_question_format"))
 
