@@ -154,9 +154,6 @@ def format_ads_generator_form(country: str):
                     tasks,
                 )
 
-                print(agent)
-                print(question)
-
                 res_box = st.empty()
                 report = []
 
