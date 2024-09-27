@@ -1,9 +1,9 @@
 import json
 from pathlib import Path
 
-import openai
 import streamlit as st
 import streamlit_authenticator as stauth
+from openai import OpenAI
 
 FOLDER = str(Path(__file__).parent)
 
@@ -48,7 +48,7 @@ def format_login_form():
     authenticator = stauth.Authenticate(
         credentials, cookie_name, cookie_key, cookie_expiry_days, preauthorized
     )
-    name, authentication_status, username = authenticator.login("Connection", "main")
+    name, authentication_status, username = authenticator.login("main")
 
     return authentication_status
 
@@ -154,6 +154,9 @@ def format_ads_generator_form(country: str):
                     tasks,
                 )
 
+                print(agent)
+                print(question)
+
                 res_box = st.empty()
                 report = []
 
@@ -234,13 +237,15 @@ def format_chat_message(
 
         question_list.append("\n".join(advantage_list))
 
+    question_list.append(t(country_code, "prompt_question_diversity"))
+
     return agent, " ".join(question_list)
 
 
 def call_chat(agent: str, question: str):
-    openai.api_key = st.secrets.api_key
+    client = OpenAI(api_key=st.secrets.api_key)
 
-    return openai.ChatCompletion.create(
+    return client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": agent},

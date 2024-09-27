@@ -40,7 +40,8 @@
         "prompt_question_advantage_saving": "- Votre épargne rémunérée à 5% par an en 2024",
         "prompt_question_advantage_fidelity_bonus": "- Une prime de fidélité pouvant aller jusqu’à 200€ en janvier 2025",
         "prompt_question_advantage_couleur_ce": "- Accédez à notre partenaire Couleur CE dès la 1ère heure de mission (billetterie, parcs et loisirs, art et culture…).",
-        "prompt_question_advantage_insurance": "- Bénéficiez d’une mutuelle d’entreprise et d’un accès au FASTT : accédez à des formations, des réductions sur vos locations de voiture, un accès prioritaire aux gardes d’enfant…"
+        "prompt_question_advantage_insurance": "- Bénéficiez d’une mutuelle d’entreprise et d’un accès au FASTT : accédez à des formations, des réductions sur vos locations de voiture, un accès prioritaire aux gardes d’enfant…",
+        "prompt_question_diversity": "Et mentionne toujours ce texte en bas de l'annonce :'Notre engagement pour la diversité et l'inclusion se reflète dans notre processus de recrutement. Nous accueillons les candidatures des personnes de tout genre, âge, ethnie, nationalité, religion, orientation sexuelle et handicap.'."
     },
     "it": {
         "brand": "Marchio",
@@ -83,6 +84,7 @@
         "prompt_question_advantage_saving": "",
         "prompt_question_advantage_fidelity_bonus": "",
         "prompt_question_advantage_couleur_ce": "",
-        "prompt_question_advantage_insurance": ""
+        "prompt_question_advantage_insurance": "",
+        "prompt_question_diversity": ""
     }
 }
