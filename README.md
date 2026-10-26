@@ -14,7 +14,7 @@ The app reads its secrets from `.streamlit/secrets.toml` (gitignored), with the 
 ```toml
 api_key = "sk-..."                  # OpenAI API key
 # openai_model = "gpt-6-luna"       # optional, default gpt-6-luna
-# openai_reasoning_effort = "none"  # optional, default none
+# openai_reasoning_effort = "none"  # optional, default none; "" for a model without reasoning
 
 [beta]                              # the shared login, username "mistertemp"
 name = "..."
@@ -39,7 +39,7 @@ The tests run the page with `streamlit.testing.v1.AppTest`, a test login and a s
 
 - **Agency advantages:** `advantages.json`, per country, brand and contract type, pre-ticked in the form. Some lines carry a year (the savings rate, the loyalty bonus): update them when the offer changes.
 - **SMIC:** `SMIC_HOURLY_GROSS` in `main.py`, value and start date, at each revaluation. A French hourly pay below it is refused.
-- **Model:** when OpenAI announces the shutdown of the model in use (https://developers.openai.com/api/docs/deprecations), set `openai_model` (and `openai_reasoning_effort` if the new model needs another value) in the Streamlit Cloud secrets: no commit needed.
+- **Model:** when OpenAI announces the shutdown of the model in use (https://developers.openai.com/api/docs/deprecations), set `openai_model` in the Streamlit Cloud secrets, and `openai_reasoning_effort` if the new model needs another value (`""` for a model without reasoning, which rejects the parameter): no commit needed. A failed call shows its error on the page.
 
 ## Deploy
 

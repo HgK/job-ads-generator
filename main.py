@@ -5,7 +5,7 @@ from pathlib import Path
 
 import streamlit as st
 import streamlit_authenticator as stauth
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 
 FOLDER = str(Path(__file__).parent)
 
@@ -280,7 +280,19 @@ def format_ad(country_code: str, generate: bool):
 
     if generate:
         agent, question = st.session_state["prompt_" + country_code]
-        st.session_state[ad_key] = st.write_stream(call_chat(agent, question))
+        st.session_state.pop(ad_key, None)
+
+        try:
+            ad = st.write_stream(call_chat(agent, question))
+        except OpenAIError as error:
+            st.error(t(country_code, "generation_error").format(error=error))
+            return
+
+        if not ad:
+            st.error(t(country_code, "empty_ad_error"))
+            return
+
+        st.session_state[ad_key] = ad
     elif ad_key in st.session_state:
         st.markdown(st.session_state[ad_key])
 
@@ -421,17 +433,21 @@ def format_chat_message(country: str, form: dict) -> tuple[str, str]:
 
 def call_chat(agent: str, question: str):
     client = OpenAI(api_key=st.secrets.api_key)
+    reasoning_effort = st.secrets.get(
+        "openai_reasoning_effort", DEFAULT_OPENAI_REASONING_EFFORT
+    )
+
+    # An empty effort leaves the parameter out: models without reasoning reject it
+    options = dict(reasoning_effort=reasoning_effort) if reasoning_effort else {}
 
     return client.chat.completions.create(
         model=st.secrets.get("openai_model", DEFAULT_OPENAI_MODEL),
-        reasoning_effort=st.secrets.get(
-            "openai_reasoning_effort", DEFAULT_OPENAI_REASONING_EFFORT
-        ),
         messages=[
             {"role": "system", "content": agent},
             {"role": "user", "content": question},
         ],
         stream=True,
+        **options,
     )
 
 
