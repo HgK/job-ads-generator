@@ -421,10 +421,10 @@ def format_chat_message(country: str, form: dict) -> tuple[str, str]:
             )
         )
 
+    paragraph_list.append(t(country_code, "prompt_question_diversity"))
+
     if form["social_version"]:
         paragraph_list.append(t(country_code, "prompt_question_social_version"))
-
-    paragraph_list.append(t(country_code, "prompt_question_diversity"))
 
     return agent, "\n\n".join(
         paragraph for paragraph in paragraph_list if paragraph != ""
