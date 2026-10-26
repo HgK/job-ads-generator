@@ -1,4 +1,5 @@
 import json
+import re
 from datetime import date
 from pathlib import Path
 
@@ -23,7 +24,7 @@ def main():
     TRANSLATION = load_json("translation.json")
     ADVANTAGES = load_json("advantages.json")
 
-    st.title(":robot_face::memo: Générateur d'annonces")
+    st.title("🤖📝 Générateur d'annonces")
 
     hide_streamlit_style = """
                 <style>
@@ -286,7 +287,7 @@ def format_ad(country_code: str, generate: bool):
     if ad_key not in st.session_state:
         return
 
-    ad = st.session_state[ad_key]
+    ad = to_plain_text(st.session_state[ad_key])
 
     with st.expander(t(country_code, "copy_text")):
         st.code(ad, language=None, wrap_lines=True)
@@ -312,6 +313,16 @@ def format_ad(country_code: str, generate: bool):
 
 def request_regeneration(country_code: str):
     st.session_state["regenerate_requested_" + country_code] = True
+
+
+def to_plain_text(ad: str) -> str:
+    # Job boards paste plain text: drop the Markdown heading and bold marks
+    lines = []
+    for line in ad.splitlines():
+        line = re.sub(r"^#{1,6}\s+", "", line.rstrip())
+        lines.append(re.sub(r"(\*\*|__)(.+?)\1", r"\2", line))
+
+    return "\n".join(lines).strip()
 
 
 def check_form(

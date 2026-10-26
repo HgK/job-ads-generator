@@ -76,7 +76,7 @@
         "prompt_question_no_invention": "N'invente aucune rémunération, aucun avantage ni nom de client absent de la demande.",
         "prompt_question_advantage_title": "Ajoute une section « Avantages » qui reprend mot pour mot chacun des avantages suivants, sans en omettre ni en ajouter :",
         "prompt_question_social_version": "Après l'annonce, ajoute une version courte pour les réseaux sociaux (3 à 4 phrases et 2 ou 3 hashtags) sous le titre « Version réseaux sociaux ».",
-        "prompt_question_diversity": "Et mentionne toujours ce texte en bas de l'annonce :'Notre engagement pour la diversité et l'inclusion se reflète dans notre processus de recrutement. Nous accueillons les candidatures des personnes de tout genre, âge, ethnie, nationalité, religion, orientation sexuelle et handicap.'."
+        "prompt_question_diversity": "Termine toujours l'annonce par ce paragraphe, mot pour mot et sans guillemets : Notre engagement pour la diversité et l'inclusion se reflète dans notre processus de recrutement. Nous accueillons les candidatures des personnes de tout genre, âge, ethnie, nationalité, religion, orientation sexuelle et handicap."
     },
     "it": {
         "brand": "Marchio",
