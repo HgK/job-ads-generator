@@ -1,3 +1,4 @@
+import itertools
 import json
 import re
 from datetime import date
@@ -24,7 +25,10 @@ def main():
     TRANSLATION = load_json("translation.json")
     ADVANTAGES = load_json("advantages.json")
 
-    st.title("🤖📝 Générateur d'annonces")
+    st.set_page_config(page_title="Générateur d'annonces", page_icon="📝")
+
+    # U+FE0F asks for the colour emoji: Streamlit's heading font draws a plain 🤖
+    st.title("🤖\ufe0f📝 Générateur d'annonces")
 
     hide_streamlit_style = """
                 <style>
@@ -283,7 +287,10 @@ def format_ad(country_code: str, generate: bool):
         st.session_state.pop(ad_key, None)
 
         try:
-            ad = st.write_stream(call_chat(agent, question))
+            with st.spinner(t(country_code, "generating")):
+                stream = wait_for_text(call_chat(agent, question))
+
+            ad = st.write_stream(stream)
         except OpenAIError as error:
             st.error(t(country_code, "generation_error").format(error=error))
             return
@@ -321,6 +328,18 @@ def format_ad(country_code: str, generate: bool):
         mime="text/plain",
         key="download_" + country_code,
     )
+
+
+def wait_for_text(stream):
+    # Reads up to the first text, so the spinner stays until the ad starts
+    chunks = iter(stream)
+    head = []
+    for chunk in chunks:
+        head.append(chunk)
+        if chunk.choices and chunk.choices[0].delta.content:
+            break
+
+    return itertools.chain(head, chunks)
 
 
 def request_regeneration(country_code: str):
