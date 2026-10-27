@@ -282,36 +282,42 @@ def format_ads_generator_form(country: str):
 def format_ad(country_code: str, generate: bool):
     ad_key = "ad_" + country_code
 
+    # One placeholder per part: a new generation empties each at once, so the old
+    # ad and its buttons go and the spinner shows in their place, in view
+    ad_slot, copy_slot, buttons_slot = st.empty(), st.empty(), st.empty()
+
     if generate:
         agent, question = st.session_state["prompt_" + country_code]
         st.session_state.pop(ad_key, None)
 
+        # Errors go under the ad slot, so a stream cut short keeps its partial text
         try:
-            with st.spinner(t(country_code, "generating")):
-                stream = wait_for_text(call_chat(agent, question))
+            with ad_slot.container():
+                with st.spinner(t(country_code, "generating")):
+                    stream = wait_for_text(call_chat(agent, question))
 
-            ad = st.write_stream(stream)
+            ad = ad_slot.write_stream(stream)
         except OpenAIError as error:
-            st.error(t(country_code, "generation_error").format(error=error))
+            copy_slot.error(t(country_code, "generation_error").format(error=error))
             return
 
         if not ad:
-            st.error(t(country_code, "empty_ad_error"))
+            copy_slot.error(t(country_code, "empty_ad_error"))
             return
 
         st.session_state[ad_key] = ad
     elif ad_key in st.session_state:
-        st.markdown(st.session_state[ad_key])
+        ad_slot.markdown(st.session_state[ad_key])
 
     if ad_key not in st.session_state:
         return
 
     ad = to_plain_text(st.session_state[ad_key])
 
-    with st.expander(t(country_code, "copy_text")):
+    with copy_slot.expander(t(country_code, "copy_text")):
         st.code(ad, language=None, wrap_lines=True)
 
-    column_left, column_right = st.columns(2)
+    column_left, column_right = buttons_slot.container().columns(2)
 
     # A flag read on the next run, so the new ad replaces the old one in its slot
     column_left.button(
